@@ -4,7 +4,11 @@ public class Airline {
 	private String name;
 	private String code;
 	
-	//set up the airline details 
+	/**
+	 * set up the details of the airline 
+	 * @param name the name of the airline company 
+	 * @param code the airline code 
+	 */
 	public Airline(String name, String code) {
 		
 		if( name.trim().length() ==0|| code.trim().length()== 0)    
