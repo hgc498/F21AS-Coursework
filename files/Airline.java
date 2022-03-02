@@ -1,11 +1,12 @@
 //class to contain airline details - names and codes 
 public class Airline {
 	
-	private String code;
 	private String name;
+	private String code;
+	
 	
 	public Airline(String name, String code) {
-	//if no details have been entered for either the code or the name, throw an illegal exception	
+		
 		if( name.trim().length() ==0|| code.trim().length()== 0)    
         {
           throw new IllegalStateException(
@@ -14,20 +15,28 @@ public class Airline {
 		if(code.trim().length() > 2) {
 			throw new IllegalStateException("Please enter a valid airline code");
 		}
+		this.code = code.trim();
+		this.name = name.trim();
 		
-	}
-	public String getCode() {
-		return code;
 	}
 	
 	public String getAirline() {
 		return name;
 	}
 	
-	//String containing all the details of airlines 
+	public String getCode() {
+		return code;
+	}
+	
+	//comparing airlines by the code 
+	public int comapreCodes(Airline otherCodes) {
+		return code.compareTo(otherCodes.getCode());
+	}
+	
+	// string containing all the details for the airline code and name 
 	public String toString()
-    	{
+    {
         return String.format("%-5s", code ) + String.format("%-35s", name);
-    	}
+    }
 	
 }
