@@ -1,5 +1,6 @@
 package base;
-import java.util.Queue;
+
+import java.util.concurrent.BlockingQueue;
 
 public class ControlTower implements Runnable{
 	
@@ -10,20 +11,21 @@ public class ControlTower implements Runnable{
 
 	//A thread communication mechanism must be implemented to allow
 	//the GUI to get flights information from the towers and display it
-  
-  //needs linking with gui
 
 	
 	private String newPosition; 
 	private Flight flight;
-	private Queue<Flight> positions;
+	private BlockingQueue<Flight> positions;
 	private String status;
+	private boolean isRunning;
 	
 
-	public ControlTower(String newPosition, Boolean bool, Queue<Flight> positions) {
+	public ControlTower(String newPosition, Boolean bool, BlockingQueue<Flight> positions) {
 		// TODO Auto-generated method stub
 		this.newPosition = newPosition; 
 		this.positions = positions;
+		isRunning = true;
+		
 		//need to adjust if condition in thread manager 
 		if (bool) {
 			status = "arrived";
@@ -34,28 +36,37 @@ public class ControlTower implements Runnable{
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-		if(!positions.isEmpty()) {
-			
-			try { 
-				flight = positions.poll();
-				System.out.println(" Flight " + flight.getCode() + " position is: " + newPosition);
-				//Thread.sleep(500);
-				if (status == "arrived") {
-					Thread.sleep(1000);
-				}else if (status == "departed") {
-					Thread.sleep(2000);
-				}
+		// TODO Auto-generated method stub#
+		while(isRunning == true) {
+			if(!positions.isEmpty()) {
 				
-			}catch (InterruptedException e) {
-				e.printStackTrace();
+				try { 
+					positions.put(flight);
+					System.out.println(" Flight " + flight.getCode() + " position is: " + newPosition);
+					//Thread.sleep(500);
+					if (status == "arrived") {
+						Thread.sleep(1000);
+					}else if (status == "departed") {
+						Thread.sleep(2000);
+					}
+					
+				}catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				flight.FlightStats(status);
+				System.out.println(" Flight "+ flight.getCode() + " has " + status);
+				positions.add(flight);
+				
 			}
-			flight.FlightStats(status);
-			System.out.println(" Flight "+ flight.getCode() + " has " + status);
-			positions.add(flight);
+			//stop producing 
+			stop();
 			
 		}
-		
+			
 	}
+	public void stop() {
+		isRunning = false;
+	}
+		
 
 }
