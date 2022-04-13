@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Flight {
+public class Flight implements Runnable {
 public static String formatDateStr = "dd:MM:YYYY";
 public static String formatTimeStr = "HH:mm";
 public static String formatStr = "dd:MM:YYYY HH:mm";
@@ -16,6 +16,12 @@ public static String formatStr = "dd:MM:YYYY HH:mm";
 	private String destination;
 	private Date begin;
 	private List<String> towers = new ArrayList<>();
+	private int arrivalCount = 0;
+	private int departureCount = 0;
+	private String message;
+	ControlTower target;
+	Thread t;
+	
 	public String getCode() {
 		return code;
 	}
@@ -114,6 +120,29 @@ public static String formatStr = "dd:MM:YYYY HH:mm";
 		}
 		return sb.toString();
 	}
+	//check the flight status 
+	public void FlightStats(String status) {
+		if (status.equals("arrived")) {
+			arrivalCount++;
+		} else {
+			departureCount++;
+		}
+	}
+	//instantiate and call thread object
+	public Flight(ControlTower targ, String s){
+		target=targ;
+		message=s;
+		t=new Thread(this); 
+		t.start(); 
+	    }
+	//synchronize flight with tower
+	public void run(){
+		synchronized(target){
+		target.permission(message);
+		}
+	   
+	}
 	
 
 }
+
