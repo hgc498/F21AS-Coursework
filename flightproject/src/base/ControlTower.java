@@ -67,6 +67,21 @@ public class ControlTower implements Runnable{
 	public void stop() {
 		isRunning = false;
 	}
+
+	synchronized void permission(String message) {
+		// TODO Auto-generated method stub
+		System.out.print(" " + message);
+		try {
+		    //waiting for one second
+		    Thread.sleep(1000);
+		    }
+		catch(InterruptedException e){
+		    //throwing an exception
+	            System.out.println("Process was Interrupted");
+		}
+		    System.out.println(" ");
+	 }
+		
 		
 
 }
