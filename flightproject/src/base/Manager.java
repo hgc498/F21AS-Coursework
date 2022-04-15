@@ -26,8 +26,8 @@ public class Manager {
 	public void loadAll() {
 		loadAirports();
 		loadAirlines();
-		loadFlights();
 		loadPlanes();
+		loadFlights();
 	}
 
 	private void loadAirports() {
@@ -60,6 +60,11 @@ public class Manager {
 			if (!flight.init(string)) {
 				continue;
 			}
+			List<String> towers = flight.getTowers();
+			for (String tower : towers) {
+				flight.addAirport(findPortByCode(tower));
+			}
+			flight.setPlan(findPlanByCode(flight.getPlanCode()));
 			flights.add(flight);
 		}
 	}
@@ -162,3 +167,4 @@ public class Manager {
 	}
 
 }
+
