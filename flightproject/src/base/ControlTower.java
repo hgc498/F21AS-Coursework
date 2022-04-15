@@ -1,73 +1,91 @@
 package base;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import task.FlightTask;
+import window.MainWindow;
 
 public class ControlTower implements Runnable{
+	private List<Flight> flights = new ArrayList<>();
 	
-	//Flights notify the crossed tower about their new positions. 
-	//The tower processes the information by retrieving it 
-	//from the queue and storing it. 
-	//The towers act as mediators between the GUI and the flights.
-
-	//A thread communication mechanism must be implemented to allow
-	//the GUI to get flights information from the towers and display it
-
+	private ScheduledExecutorService pool ;
 	
-	private String newPosition; 
-	private Flight flight;
+	private List<FlightTask> tasks = new ArrayList<>();
+	
 	private BlockingQueue<Flight> positions;
+	boolean isRunning;
 	private String status;
-	private boolean isRunning;
 	
-
-	public ControlTower(String newPosition, Boolean bool, BlockingQueue<Flight> positions) {
-		// TODO Auto-generated method stub
-		this.newPosition = newPosition; 
-		this.positions = positions;
-		isRunning = true;
+	public ControlTower() {
+		pool = (ScheduledExecutorService) Executors.newScheduledThreadPool(300);
 		
-		//need to adjust if condition in thread manager 
-		if (bool) {
+		if (isRunning = true) {
 			status = "arrived";
 		}else {
 			status = "departed";
 		}
 	}
-
-	@Override
+	
+	public void removeFlight(String code) {
+		int index = -1;
+		for (int i = 0; i < flights.size(); i++) {
+			if (flights.get(i).getCode().equals(code)) {
+				index = i;
+				break;
+			}
+		}
+		if (index != -1) {
+			flights.remove(index);
+		}
+	}
+	
+	public void addFlight(Flight item) {
+		flights.add(item);
+	}
+	
 	public void run() {
-		// TODO Auto-generated method stub#
-		while(isRunning == true) {
-			if(!positions.isEmpty()) {
-				
-				try { 
-					positions.put(flight);
-					System.out.println(" Flight " + flight.getCode() + " position is: " + newPosition);
-					//Thread.sleep(500);
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				for (Flight flight : flights) {
+					FlightTask task = new FlightTask(flight);
+					tasks.add(task);
+					pool.scheduleAtFixedRate(task, 1, 3, TimeUnit.SECONDS);
+					MainWindow.logger.log(flight.getCode()+" is start.");
+					while(isRunning == true) {
+					try { 
 					if (status == "arrived") {
 						Thread.sleep(1000);
 					}else if (status == "departed") {
 						Thread.sleep(2000);
+					}}catch (InterruptedException e) {
+						e.printStackTrace();
 					}
-					
-				}catch (InterruptedException e) {
-					e.printStackTrace();
+					flight.FlightStats(status);
+					System.out.println(" Flight "+ flight.getCode() + " has " + status);
 				}
-				flight.FlightStats(status);
-				System.out.println(" Flight "+ flight.getCode() + " has " + status);
-				positions.add(flight);
+				}
 				
 			}
-			//stop producing 
-			stop();
-			
-		}
-			
-	}
-	public void stop() {
-		isRunning = false;
+		}).start();
 	}
 
+	public FlightTask findFlightByCode(String code) {
+		for (FlightTask task : tasks) {
+			String code2 = task.getFlight().getCode();
+			if (code.equals(code2)) {
+				return task;
+			}
+		}
+		return null;
+	}
 	synchronized void permission(String message) {
 		// TODO Auto-generated method stub
 		System.out.print(" " + message);
@@ -82,6 +100,7 @@ public class ControlTower implements Runnable{
 		    System.out.println(" ");
 	 }
 		
-		
+	
+	
 
 }
