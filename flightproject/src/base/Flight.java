@@ -16,12 +16,28 @@ public static String formatStr = "dd:MM:YYYY HH:mm";
 	private String destination;
 	private Date begin;
 	private List<String> towers = new ArrayList<>();
-	private int arrivalCount = 0;
+	private List<Airport> ports = new ArrayList<>();
+	private FlightPlan plan = new FlightPlan();
+	private String currentTower;
+	private String nextTower;
+	private int arrivalCount= 0;
 	private int departureCount = 0;
 	private String message;
 	ControlTower target;
 	Thread t;
 	
+	public String getCurrentTower() {
+		return currentTower;
+	}
+	public void setCurrentTower(String currentTower) {
+		this.currentTower = currentTower;
+	}
+	public String getNextTower() {
+		return nextTower;
+	}
+	public void setNextTower(String nextTower) {
+		this.nextTower = nextTower;
+	}
 	public String getCode() {
 		return code;
 	}
@@ -68,6 +84,18 @@ public static String formatStr = "dd:MM:YYYY HH:mm";
 		return format.format(begin);
 	}
 	
+	public List<Airport> getPorts() {
+		return ports;
+	}
+	public void setPorts(List<Airport> ports) {
+		this.ports = ports;
+	}
+	public FlightPlan getPlan() {
+		return plan;
+	}
+	public void setPlan(FlightPlan plan) {
+		this.plan = plan;
+	}
 	public Flight() {
 		
 	}
@@ -103,6 +131,10 @@ public static String formatStr = "dd:MM:YYYY HH:mm";
 		return true;
 	}
 	
+	public void addAirport(Airport port) {
+		this.ports.add(port);
+	}
+	
 	
 	@Override
 	public String toString() {
@@ -120,13 +152,19 @@ public static String formatStr = "dd:MM:YYYY HH:mm";
 		}
 		return sb.toString();
 	}
-	//check the flight status 
+	
+	public void fly() {
+		
+		
+	}
 	public void FlightStats(String status) {
+		// TODO Auto-generated method stub
 		if (status.equals("arrived")) {
 			arrivalCount++;
 		} else {
 			departureCount++;
 		}
+		
 	}
 	//instantiate and call thread object
 	public Flight(ControlTower targ, String s){
@@ -143,6 +181,6 @@ public static String formatStr = "dd:MM:YYYY HH:mm";
 	   
 	}
 	
+	
 
 }
-
